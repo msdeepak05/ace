@@ -5,10 +5,22 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import { Layout } from "../components/open/Layout";
 import { Dashboard } from "../lib/path";
+import { useEffect, useState } from "react";
 
 export default function Login() {
   const router = useRouter();
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
+  const [appName, setAppName] = useState("AceHRMS");
+  const [logo, setLogo] = useState("/next.svg");
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then(res => res.json())
+      .then(data => {
+        if (data.appName) setAppName(data.appName);
+        if (data.logo) setLogo(data.logo);
+      });
+  }, []);
 
   const onSubmit = async (data: any) => {
     const res = await fetch("/api/login", {
@@ -29,7 +41,12 @@ export default function Login() {
     <Layout>
       <div className="min-h-screen flex flex-col justify-center items-center bg-white">
         <div className="w-full max-w-md bg-white p-8 rounded shadow">
-          <h1 className="text-2xl font-bold text-indigo-700 mb-6 text-center">Login to AceHRMS</h1>
+          <div className="flex flex-col items-center mb-4">
+            <img src={logo} alt="Logo" className="h-12 w-12 mb-2 rounded bg-white" />
+            <h1 className="text-2xl font-bold text-indigo-700 text-center">
+              Login to {appName}
+            </h1>
+          </div>
           <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
             <input
               type="email"
